@@ -6,16 +6,24 @@
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 import Purchases from 'react-native-purchases';
+import { resolveRevenueCatApiKey } from './subscriptionConfig';
 
 const REVENUECAT_KEYS = {
   ios: Constants.expoConfig?.extra?.revenuecatApiKeyIos as string | undefined,
   android: Constants.expoConfig?.extra?.revenuecatApiKeyAndroid as string | undefined,
+  test: Constants.expoConfig?.extra?.revenuecatTestApiKey as string | undefined,
 };
 
 let configured = false;
 
 export async function configurePurchases(userId: string): Promise<boolean> {
-  const apiKey = Platform.OS === 'ios' ? REVENUECAT_KEYS.ios : REVENUECAT_KEYS.android;
+  const isExpoGo = Constants.appOwnership === 'expo';
+  const apiKey = resolveRevenueCatApiKey(Platform.OS, isExpoGo, REVENUECAT_KEYS);
+
+  if (isExpoGo && !apiKey?.startsWith('test_')) {
+    if (__DEV__) console.info('revenuecat_skipped_expo_go_test_key_missing');
+    return false;
+  }
   if (!apiKey) {
     if (__DEV__) console.warn('revenuecat_not_configured platform=' + Platform.OS);
     return false;

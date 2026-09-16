@@ -11,6 +11,7 @@ import Animated, {
   withSpring,
   withRepeat,
   withTiming,
+  Easing,
   interpolate,
   Extrapolation,
 } from 'react-native-reanimated';
@@ -83,7 +84,7 @@ export const MagicalTabBar: React.FC<MagicalTabBarProps> = ({
 
   useEffect(() => {
     particlePhase.value = withRepeat(
-      withTiming(2 * Math.PI, { duration: 6000, easing: () => 1 }),
+      withTiming(2 * Math.PI, { duration: 6000, easing: Easing.linear }),
       -1,
       false
     );

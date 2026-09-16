@@ -74,6 +74,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     googleClientIdAndroid: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_ANDROID,
     revenuecatApiKeyIos: process.env.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY,
     revenuecatApiKeyAndroid: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY,
+    revenuecatTestApiKey: process.env.EXPO_PUBLIC_REVENUECAT_TEST_API_KEY,
     sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
   },
 });

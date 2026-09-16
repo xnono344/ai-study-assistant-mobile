@@ -60,6 +60,7 @@ pnpm dev -- --lan
 ```
 
 Scan the QR code with Expo Go. Expo Go can preview subscription screens, but real in-app purchases require an EAS development build.
+To test subscriptions inside Expo Go, add a RevenueCat Test Store key as `EXPO_PUBLIC_REVENUECAT_TEST_API_KEY`. Without one, subscription initialization is skipped and the rest of the app remains usable.
 
 ## Verification
 
