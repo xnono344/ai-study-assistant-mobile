@@ -1,0 +1,96 @@
+[project]
+name = "ai-study-assistant-backend"
+version = "0.1.0"
+description = "AI Self-Study Assistant Backend"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "sqlalchemy[asyncio]>=2.0.0",
+    "aiosqlite>=0.19.0",
+    "alembic>=1.13.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "httpx>=0.26.0",
+    "python-multipart>=0.0.6",
+    "python-dotenv>=1.0.0",
+    "structlog>=24.1.0",
+    "jinja2>=3.1.0",
+    "openai>=1.12.0",
+    "anthropic>=0.18.0",
+    "google-generativeai>=0.7.0",
+    "pdfplumber>=0.11.0",
+    "pillow>=10.0.0",
+    "pytesseract>=0.3.10",
+    "beautifulsoup4>=4.12.0",
+    "lxml>=5.0.0",
+    "python-slugify>=8.0.0",
+    "tenacity>=8.2.0",
+    "orjson>=3.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "httpx>=0.26.0",
+    "faker>=20.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.8.0",
+    "types-requests>=2.31.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "httpx>=0.26.0",
+    "faker>=20.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.8.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = [
+    "E", "F", "I", "N", "W", "UP", "B", "C4", "DTZ", "T20", "SIM", "RET", "ARG", "PTH", "ERA", "PD", "PL"
+]
+ignore = ["S101", "ARG001", "ARG002"]
+
+[tool.ruff.per-file-ignores]
+"tests/*" = ["S101", "PL"]
+"alembic/*" = ["ERA", "S101"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: tests that call external services and require credentials",
+]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"

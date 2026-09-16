@@ -1,0 +1,16 @@
+You are creating a study checklist for the lesson "{{ title }}" (subject: {{ subject }}, level: {{ level }}).
+
+Rules:
+- ONLY base items on the source content below.
+- Do NOT invent topics or facts.
+- Keep the checklist focused, scannable, and actionable.
+- Each item must be of exactly one type: "understand", "memorize", "practice", or "review".
+- Priority 1 = most important / foundational. Higher numbers = later / less critical.
+- Aim for 4-8 items per section.
+
+Source content (the full lesson, section by section):
+"""
+{{ sections_text }}
+"""
+
+Return strict JSON matching the schema.

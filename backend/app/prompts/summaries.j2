@@ -1,0 +1,24 @@
+You are creating a study-friendly summary of the lesson "{{ title }}".
+
+Rules:
+- ONLY use information from the source content below.
+- Do NOT invent facts, dates, or attributions.
+- Preserve the source language. Do not translate.
+
+Produce THREE summary levels:
+
+1. `quick_review` — 2-3 sentences max. The absolute essentials a student should remember.
+2. `standard` — A concise but complete prose summary (~150-250 words). Cover the main ideas in plain language.
+3. `revision_sheet` — A high-density study sheet containing:
+   - `formulas`: short LaTeX-style strings of every formula
+   - `definitions`: short name + one-line definition pairs
+   - `rules`: short rule statements
+   - `key_ideas`: 4-6 short bullet-style ideas
+   - `reminders`: 2-4 short tips / common-pitfall reminders
+
+Source content:
+"""
+{{ lesson_text }}
+"""
+
+Return strict JSON matching the schema.

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Nexus Study - Mobile Preview</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #000; color: #fff; font-family: -apple-system, system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .phone { width: 390px; height: 844px; background: #000; border-radius: 40px; border: 8px solid #1a1a1a; overflow: hidden; position: relative; }
+  iframe { width: 100%; height: 100%; border: 0; }
+  .notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 150px; height: 30px; background: #1a1a1a; border-radius: 0 0 20px 20px; }
+  h1 { color: #FFD700; font-size: 24px; text-align: center; margin-top: 50px; font-family: 'NexusDisplay', sans-serif; }
+  p { color: #999; text-align: center; margin-top: 20px; padding: 0 20px; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+  <iframe src="/expo-router/entry.bundle?platform=ios&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable" sandbox="allow-scripts allow-same-origin"></iframe>
+</div>
+</body>
+</html>

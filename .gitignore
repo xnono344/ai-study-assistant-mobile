@@ -1,0 +1,17 @@
+node_modules/
+frontend-mobile/node_modules/
+frontend-mobile/.expo/
+frontend-mobile/.env
+backend/.env
+backend/venv
+backend/.venv/
+backend/.pytest_cache/
+.pytest_cache/
+backend/**/*.pyc
+backend/**/__pycache__/
+backend/*.egg-info/
+backend/uploads/
+.DS_Store
+coverage/
+dist/
+*.log
