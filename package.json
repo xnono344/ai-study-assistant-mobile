@@ -4,11 +4,11 @@
   "private": true,
   "description": "Nexus Study — AI Self-Study Assistant mobile app (iOS + Android)",
   "scripts": {
-    "dev": "cd frontend-mobile && expo start",
-    "build:android": "cd frontend-mobile && eas build --platform android --profile production --non-interactive",
-    "build:ios": "cd frontend-mobile && eas build --platform ios --profile production --non-interactive",
-    "submit:android": "cd frontend-mobile && eas submit --platform android --non-interactive",
-    "submit:ios": "cd frontend-mobile && eas submit --platform ios --non-interactive",
+    "dev": "pnpm --dir frontend-mobile exec expo start",
+    "build:android": "pnpm --dir frontend-mobile exec eas build --platform android --profile production --non-interactive",
+    "build:ios": "pnpm --dir frontend-mobile exec eas build --platform ios --profile production --non-interactive",
+    "submit:android": "pnpm --dir frontend-mobile exec eas submit --platform android --non-interactive",
+    "submit:ios": "pnpm --dir frontend-mobile exec eas submit --platform ios --non-interactive",
     "test": "pnpm --filter nexus-study test",
     "test:e2e": "pnpm --filter nexus-study test:e2e",
     "lint": "pnpm --filter nexus-study lint",
@@ -16,7 +16,7 @@
     "backend:test": "cd backend && venv/bin/python -m pytest -m 'not integration' -v",
     "backend:test:live": "cd backend && venv/bin/python -m pytest -m integration -v",
     "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm backend:test",
-    "backend:install": "cd backend && python -m venv venv && . venv/bin/activate && pip install -e ."
+    "backend:install": "cd backend && python -m venv venv && venv/bin/python -m pip install -e '.[dev]'"
   },
   "engines": {
     "node": ">=20.0.0",

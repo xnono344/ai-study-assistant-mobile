@@ -8,7 +8,10 @@ from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+# ``config.py`` lives at ``backend/app/core/config.py``.  Settings and local
+# runtime data belong to the backend directory, independent of the shell's
+# current working directory.
+BASE_DIR = Path(__file__).resolve().parents[2]
 
 
 class Settings(BaseSettings):
@@ -45,6 +48,28 @@ class Settings(BaseSettings):
     DATABASE_URL: str = Field(
         default=f"sqlite+aiosqlite:///{BASE_DIR / 'data' / 'app.db'}"
     )
+
+    @field_validator("DATABASE_URL")
+    @classmethod
+    def resolve_sqlite_database_url(cls, value: str) -> str:
+        """Resolve local SQLite files against ``backend`` and create their directory."""
+        prefixes = ("sqlite+aiosqlite:///", "sqlite:///")
+        for prefix in prefixes:
+            if not value.startswith(prefix):
+                continue
+
+            raw_path = value.removeprefix(prefix)
+            if raw_path == ":memory:":
+                return value
+
+            database_path = Path(raw_path).expanduser()
+            if not database_path.is_absolute():
+                database_path = BASE_DIR / database_path
+            database_path = database_path.resolve()
+            database_path.parent.mkdir(parents=True, exist_ok=True)
+            return f"{prefix}{database_path}"
+
+        return value
 
     # Tesseract
     TESSERACT_CMD: str = "tesseract"

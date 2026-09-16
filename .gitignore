@@ -11,6 +11,9 @@ backend/**/*.pyc
 backend/**/__pycache__/
 backend/*.egg-info/
 backend/uploads/
+backend/data/*.db
+backend/data/*.db-shm
+backend/data/*.db-wal
 .DS_Store
 coverage/
 dist/
