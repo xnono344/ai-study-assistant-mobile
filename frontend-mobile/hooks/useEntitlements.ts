@@ -40,10 +40,12 @@ export function useEntitlements(): Entitlements {
   }, [customerInfo]);
 
   useEffect(() => {
-    fetchInfo();
+    // RevenueCat is an external store; its async response updates local state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchInfo();
     // Sync on app foreground
     const sub = AppState.addEventListener('change', (state) => {
-      if (state === 'active') fetchInfo();
+      if (state === 'active') void fetchInfo();
     });
     return () => sub.remove();
   }, [fetchInfo]);

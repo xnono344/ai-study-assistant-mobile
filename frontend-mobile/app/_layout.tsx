@@ -128,7 +128,7 @@ export default function RootLayout() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <SafeAreaProvider>
           <QueryClientProvider client={queryClient}>
-            <StatusBar style="light" backgroundColor={Colors.background} />
+            <StatusBar style="light" />
             <View style={{ flex: 1 }}>
               {status === 'offline' || pendingCount > 0 ? (
                 <View

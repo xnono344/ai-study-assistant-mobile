@@ -23,6 +23,14 @@ type Mode = 'random' | 'sequential';
 
 const DIFFICULTY_COLORS = { easy: Colors.success, medium: Colors.warning, hard: Colors.error };
 
+function seededRank(id: string, seed: number): number {
+  let hash = seed;
+  for (let index = 0; index < id.length; index += 1) {
+    hash = Math.imul(hash ^ id.charCodeAt(index), 16777619);
+  }
+  return hash >>> 0;
+}
+
 interface PracticeExercise {
   id: string;
   title: string;
@@ -47,7 +55,8 @@ export default function PracticeScreen() {
   const [answered, setAnswered] = useState(false);
   const [correct, setCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState({ correct: 0, total: 0 });
-  const [startTime, setStartTime] = useState(Date.now());
+  const [startTime, setStartTime] = useState(() => Date.now());
+  const [shuffleSeed] = useState(() => Date.now());
 
   const { data: lessons } = useQuery({
     queryKey: ['lessons'],
@@ -86,9 +95,13 @@ export default function PracticeScreen() {
   const filtered = useMemo(() => {
     let exs = workspaces ?? [];
     if (difficulty !== 'all') exs = exs.filter((e) => e.difficulty === difficulty);
-    if (mode === 'random') exs = [...exs].sort(() => Math.random() - 0.5);
+    if (mode === 'random') {
+      exs = [...exs].sort(
+        (left, right) => seededRank(left.id, shuffleSeed) - seededRank(right.id, shuffleSeed),
+      );
+    }
     return exs;
-  }, [workspaces, difficulty, mode]);
+  }, [workspaces, difficulty, mode, shuffleSeed]);
 
   // Guard: if filter changes shrunk the list below currentIndex, clamp so we
   // never index out of bounds (which returns undefined and breaks submit).

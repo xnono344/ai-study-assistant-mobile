@@ -97,14 +97,6 @@ export function useAuth() {
   const state = useAuthState();
   const initRef = useRef(false);
 
-  useEffect(() => {
-    if (initRef.current) return;
-    initRef.current = true;
-    bootstrap();
-    // bootstrap is a stable callback; this one-shot guard also prevents repeats.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const bootstrap = useCallback(async () => {
     try {
       const sessionId = await getOrCreateSessionId();
@@ -167,6 +159,54 @@ export function useAuth() {
     }
   }, []);
 
+  useEffect(() => {
+    if (initRef.current) return;
+    initRef.current = true;
+    void bootstrap();
+  }, [bootstrap]);
+
+  const exchangeCode = useCallback(async (code: string, state: string) => {
+    // CSRF check: the `state` we minted and stashed before redirecting to
+    // Google must come back unchanged. Without this, a malicious redirect
+    // could trick the app into exchanging an attacker's authorization code.
+    const storedState = await SecureStore.getItemAsync(OAUTH_STATE_KEY);
+    const codeVerifier = await SecureStore.getItemAsync(CODE_VERIFIER_KEY);
+    const clientId = await SecureStore.getItemAsync(OAUTH_CLIENT_ID_KEY);
+    if (!storedState || storedState !== state) {
+      throw new Error('OAuth state mismatch — possible CSRF, aborting sign-in');
+    }
+    if (!codeVerifier || !clientId) {
+      throw new Error('OAuth PKCE session is incomplete');
+    }
+    // Delete state IMMEDIATELY to prevent replay — the code is single-use
+    // and must not be allowed to be exchanged twice if the request is
+    // retried or interrupted.
+    await Promise.all([
+      SecureStore.deleteItemAsync(OAUTH_STATE_KEY),
+      SecureStore.deleteItemAsync(CODE_VERIFIER_KEY),
+      SecureStore.deleteItemAsync(OAUTH_CLIENT_ID_KEY),
+    ]);
+
+    const redirectUri = AuthSession.makeRedirectUri({
+      scheme: 'nexusstudy',
+      native: 'nexusstudy://oauth',
+    });
+    const response = await apiCall<{
+      user: User;
+      access_token: string;
+      refresh_token: string;
+    }>('/api/v1/auth/google/exchange', {
+      method: 'POST',
+      body: JSON.stringify({ code, redirect_uri: redirectUri, state, code_verifier: codeVerifier, client_id: clientId }),
+    });
+
+    await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, response.access_token);
+    await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, response.refresh_token);
+    await SecureStore.setItemAsync(USER_KEY, JSON.stringify(response.user));
+
+    setAuthState({ user: response.user, isLoading: false, error: null });
+  }, []);
+
   const signInWithGoogle = useCallback(async () => {
     setAuthState({ isLoading: true, error: null });
     try {
@@ -225,51 +265,7 @@ export function useAuth() {
       if (!existing) setAuthState({ error: i18n.t('errors.generic'), isLoading: false });
       throw e;
     }
-    // exchangeCode is stable (it has no dependencies) and is declared below.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const exchangeCode = useCallback(async (code: string, state: string) => {
-    // CSRF check: the `state` we minted and stashed before redirecting to
-    // Google must come back unchanged. Without this, a malicious redirect
-    // could trick the app into exchanging an attacker's authorization code.
-    const storedState = await SecureStore.getItemAsync(OAUTH_STATE_KEY);
-    const codeVerifier = await SecureStore.getItemAsync(CODE_VERIFIER_KEY);
-    const clientId = await SecureStore.getItemAsync(OAUTH_CLIENT_ID_KEY);
-    if (!storedState || storedState !== state) {
-      throw new Error('OAuth state mismatch — possible CSRF, aborting sign-in');
-    }
-    if (!codeVerifier || !clientId) {
-      throw new Error('OAuth PKCE session is incomplete');
-    }
-    // Delete state IMMEDIATELY to prevent replay — the code is single-use
-    // and must not be allowed to be exchanged twice if the request is
-    // retried or interrupted.
-    await Promise.all([
-      SecureStore.deleteItemAsync(OAUTH_STATE_KEY),
-      SecureStore.deleteItemAsync(CODE_VERIFIER_KEY),
-      SecureStore.deleteItemAsync(OAUTH_CLIENT_ID_KEY),
-    ]);
-
-    const redirectUri = AuthSession.makeRedirectUri({
-      scheme: 'nexusstudy',
-      native: 'nexusstudy://oauth',
-    });
-    const response = await apiCall<{
-      user: User;
-      access_token: string;
-      refresh_token: string;
-    }>('/api/v1/auth/google/exchange', {
-      method: 'POST',
-      body: JSON.stringify({ code, redirect_uri: redirectUri, state, code_verifier: codeVerifier, client_id: clientId }),
-    });
-
-    await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, response.access_token);
-    await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, response.refresh_token);
-    await SecureStore.setItemAsync(USER_KEY, JSON.stringify(response.user));
-
-    setAuthState({ user: response.user, isLoading: false, error: null });
-  }, []);
+  }, [exchangeCode]);
 
   const validateCallback = useCallback(async (state: string): Promise<boolean> => {
     const storedState = await SecureStore.getItemAsync(OAUTH_STATE_KEY);

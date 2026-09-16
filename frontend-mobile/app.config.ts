@@ -9,28 +9,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   orientation: 'portrait',
   icon: './assets/images/icon.png',
   userInterfaceStyle: 'dark',
-  newArchEnabled: true,
-  splash: {
-    image: './assets/images/splash.png',
-    resizeMode: 'contain',
-    backgroundColor: '#000000',
-  },
   ios: {
     bundleIdentifier: 'com.nexusstudy.app',
     supportsTablet: true,
     associatedDomains: ['applinks:nexusstudy.app'],
     infoPlist: {
-      // SECURITY: The custom `nexusstudy://` scheme is kept ONLY as a fallback
-      // so the OAuth redirect (which uses AuthSession.makeRedirectUri({scheme:
-      // 'nexusstudy'})) still resolves while universal links are rolled out.
-      // Production traffic should flow through `https://nexusstudy.app/...`
-      // (applinks above). MIGRATE: switch useAuth to use universal links and
-      // remove CFBundleURLTypes and the Android intentFilters `nexusstudy://`
-      // entry.
-      CFBundleURLTypes: [{
-        CFBundleURLSchemes: ['nexusstudy'],
-        CFBundleURLName: 'Nexus Study',
-      }],
       UIApplicationShortcutItems: [
         { UIApplicationShortcutItemType: 'new-lesson', UIApplicationShortcutItemTitle: 'New Lesson', UIApplicationShortcutItemSubtitle: 'Create a lesson', UIApplicationShortcutItemIconType: 'UIApplicationShortcutIconTypeCompose' },
         { UIApplicationShortcutItemType: 'continue-study', UIApplicationShortcutItemTitle: 'Continue', UIApplicationShortcutItemSubtitle: 'Resume your last lesson', UIApplicationShortcutItemIconType: 'UIApplicationShortcutIconTypePlay' },
@@ -51,18 +34,25 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         autoVerify: true,
         data: [
           { scheme: 'https', host: 'nexusstudy.app' },
-          // SECURITY: The `nexusstudy://` custom scheme is kept ONLY as a
-          // fallback so the OAuth redirect still resolves while universal
-          // links are rolled out. Remove this entry once useAuth is migrated
-          // to https://nexusstudy.app/... universal links.
-          { scheme: 'nexusstudy' },
         ],
         category: ['BROWSABLE', 'DEFAULT'],
       },
     ],
   },
   plugins: [
+    '@sentry/react-native',
+    'expo-asset',
+    'expo-font',
     'expo-router',
+    'expo-secure-store',
+    ['expo-splash-screen', {
+      image: './assets/images/icon.png',
+      imageWidth: 200,
+      resizeMode: 'contain',
+      backgroundColor: '#000000',
+    }],
+    'expo-sqlite',
+    'expo-web-browser',
     ['expo-notifications', {
       icon: './assets/images/notification-icon.png',
       color: '#A855F7',

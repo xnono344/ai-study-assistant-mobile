@@ -116,6 +116,7 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
     opacity: pressOpacity.value,
   }));
 
+  /* eslint-disable react-hooks/immutability -- Reanimated shared values are mutable animation handles. */
   const handlePressIn = () => {
     if (disabled || loading) return;
     pressScale.value = withSpring(0.96, { damping: 18, stiffness: 400 });
@@ -125,6 +126,7 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
     pressScale.value = withSpring(1, { damping: 18, stiffness: 400 });
     pressOpacity.value = withTiming(1, { duration: 200 });
   };
+  /* eslint-enable react-hooks/immutability */
 
   return (
     <Animated.View

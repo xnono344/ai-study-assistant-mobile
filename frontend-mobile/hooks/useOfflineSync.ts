@@ -95,7 +95,9 @@ export function useOfflineSync() {
     });
 
     const interval = setInterval(sync, POLL_INTERVAL);
-    refreshPendingCount();
+    // SQLite is an external store; its async response updates local state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void refreshPendingCount();
 
     return () => {
       unsubscribe();

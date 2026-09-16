@@ -106,6 +106,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
     elevation: 4 + pressGlow.value * 8,
   }));
 
+  /* eslint-disable react-hooks/immutability -- Reanimated shared values are mutable animation handles. */
   const handlePressIn = () => {
     pressScale.value = withSpring(0.97, { damping: 20, stiffness: 300 });
     if (glowOnPress) pressGlow.value = withTiming(1, { duration: 150 });
@@ -115,6 +116,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
     pressScale.value = withSpring(1, { damping: 20, stiffness: 300 });
     if (glowOnPress) pressGlow.value = withTiming(0, { duration: 300 });
   };
+  /* eslint-enable react-hooks/immutability */
 
   const gradientColors: readonly [string, string, string] = variantGradient[variant];
 
